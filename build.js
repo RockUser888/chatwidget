@@ -1,21 +1,26 @@
 const fs = require('fs');
 const path = require('path');
 
-// Ruta del archivo original
-const inputPath = path.join(__dirname, 'index.html');
+// Buscar el archivo index.html en la carpeta actual
+const filePath = path.join(process.cwd(), 'index.html');
 
-// Leer el contenido
-let content = fs.readFileSync(inputPath, 'utf-8');
+if (!fs.existsSync(filePath)) {
+    console.error('❌ Error: No se encontró index.html en la raíz.');
+    process.exit(1);
+}
 
-// Reemplazar las variables de entorno por las claves secretas
+let content = fs.readFileSync(filePath, 'utf-8');
+
+// Reemplazar las variables
 content = content.replace('TU_API_KEY_DE_GROQ', process.env.GROQ_API_KEY);
 content = content.replace('TU_URL_DE_SUPABASE', process.env.SUPABASE_URL);
 content = content.replace('TU_ANON_KEY_DE_SUPABASE', process.env.SUPABASE_KEY);
 
-// Crear carpeta de salida si no existe
-fs.mkdirSync('dist', { recursive: true });
-
-// Escribir el nuevo archivo HTML en la carpeta dist
-fs.writeFileSync(path.join(__dirname, 'dist', 'index.html'), content);
+// Crear carpeta dist y escribir
+const distPath = path.join(process.cwd(), 'dist');
+if (!fs.existsSync(distPath)) {
+    fs.mkdirSync(distPath, { recursive: true });
+}
+fs.writeFileSync(path.join(distPath, 'index.html'), content);
 
 console.log('✅ Build completed successfully!');
