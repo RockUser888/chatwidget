@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Widget</title>
     <style>
-        /* ESTILOS DEL WIDGET */
         #chat-widget-container {
             position: fixed;
             bottom: 20px;
@@ -13,8 +12,6 @@
             z-index: 9999;
             font-family: 'Work Sans', sans-serif;
         }
-
-        /* Botón flotante */
         .chat-btn {
             width: 60px;
             height: 60px;
@@ -31,8 +28,6 @@
             transition: transform 0.2s;
         }
         .chat-btn:hover { transform: scale(1.1); }
-
-        /* Ventana del chat (oculta por defecto) */
         .chat-window {
             display: none;
             width: 320px;
@@ -48,7 +43,6 @@
             border: 1px solid #333;
         }
         .chat-window.open { display: flex; }
-
         .header {
             background-color: #2c2c2c;
             padding: 10px 15px;
@@ -59,7 +53,6 @@
         }
         .header h3 { margin: 0; font-size: 16px; color: white; }
         .close-btn { background: none; border: none; color: #aaa; font-size: 20px; cursor: pointer; }
-
         .messages {
             flex: 1;
             padding: 10px;
@@ -68,7 +61,6 @@
             flex-direction: column;
             gap: 8px;
         }
-
         .message {
             max-width: 85%;
             padding: 8px 12px;
@@ -78,14 +70,13 @@
         }
         .bot-message { background-color: #333; align-self: flex-start; border-bottom-left-radius: 2px; color: white; }
         .user-message { background-color: #007bff; align-self: flex-end; color: white; border-bottom-right-radius: 2px; }
-
         .input-area {
             display: flex;
             padding: 10px;
             background-color: #2c2c2c;
             border-top: 1px solid #333;
         }
-        input {
+        .input-area input {
             flex: 1;
             padding: 8px;
             border-radius: 20px;
@@ -94,7 +85,7 @@
             color: white;
             outline: none;
         }
-        button#sendBtn {
+        .input-area button#sendBtn {
             margin-left: 5px;
             padding: 8px 12px;
             border-radius: 20px;
@@ -107,18 +98,14 @@
 </head>
 <body>
 
-<!-- WIDGET HTML -->
 <div id="chat-widget-container">
     <button class="chat-btn" id="chatBtn">💬</button>
-    
     <div class="chat-window" id="chatWindow">
         <div class="header">
             <h3>Asistente IA</h3>
             <button class="close-btn" id="closeBtn">×</button>
         </div>
-        <div class="messages" id="messages">
-            <!-- Mensajes -->
-        </div>
+        <div class="messages" id="messages"></div>
         <div class="input-area">
             <input type="text" id="userInput" placeholder="Escribe...">
             <button id="sendBtn">➤</button>
@@ -126,26 +113,21 @@
     </div>
 </div>
 
-<!-- Librería Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
-    // 1. CONFIGURACIÓN
     const supabaseUrl = 'TU_URL_DE_SUPABASE';
     const supabaseKey = 'TU_ANON_KEY_DE_SUPABASE';
     const GROQ_API_KEY = 'TU_API_KEY_DE_GROQ';
 
-    // Inicialización segura
-    let supabase = null;
+    let supabaseInstance = null;
     try {
         if (supabaseUrl && supabaseUrl !== 'TU_URL_DE_SUPABASE' && window.supabase) {
-            supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+            supabaseInstance = window.supabase.createClient(supabaseUrl, supabaseKey);
         }
     } catch (e) {
         console.warn("Supabase no inicializado:", e);
     }
 
-    // Referencias DOM
     const chatBtn = document.getElementById('chatBtn');
     const chatWindow = document.getElementById('chatWindow');
     const closeBtn = document.getElementById('closeBtn');
@@ -153,7 +135,6 @@
     const userInput = document.getElementById('userInput');
     const sendBtn = document.getElementById('sendBtn');
 
-    // 2. LÓGICA DEL WIDGET
     chatBtn.addEventListener('click', () => chatWindow.classList.toggle('open'));
     closeBtn.addEventListener('click', () => chatWindow.classList.remove('open'));
     sendBtn.addEventListener('click', sendMessage);
@@ -169,15 +150,15 @@
 
         try {
             let context = "";
-            if (supabase) {
+            if (supabaseInstance) {
                 try {
-                    const { data: history } = await supabase
+                    const { data: history } = await supabaseInstance
                         .from('chats')
                         .select('message')
                         .order('id', { ascending: false })
                         .limit(5);
                     if (history) context = history.map(m => m.message).reverse().join('\n');
-                } catch (e) { console.warn("Error DB", e); }
+                } catch (err) { console.warn("Error DB", err); }
             }
 
             if (!GROQ_API_KEY || GROQ_API_KEY === 'TU_API_KEY_DE_GROQ') {
@@ -204,13 +185,12 @@
                 const reply = data.choices[0].message.content;
                 addMessage(reply, 'bot');
                 
-                if (supabase) {
-                    await supabase.from('chats').insert([{ message: text }, { message: reply }]);
+                if (supabaseInstance) {
+                    await supabaseInstance.from('chats').insert([{ message: text }, { message: reply }]);
                 }
             } else {
                 addMessage("Error en la respuesta de la IA.", "bot");
             }
-
         } catch (error) {
             console.error(error);
             addMessage("Error de conexión.", "bot");
@@ -228,6 +208,5 @@
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 </script>
-
 </body>
 </html>
