@@ -3,165 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Casino Chat Widget</title>
+    <title>Soporte Casino</title>
     <style>
-        #chat-widget-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 99999;
-            font-family: Arial, sans-serif;
-        }
-        .chat-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #f1c40f, #d4ac0d);
-            color: #111;
-            border: 2px solid #fff;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            cursor: pointer;
-            font-size: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s;
-        }
-        .chat-btn:hover { transform: scale(1.1); }
-        .chat-window {
-            display: none;
-            width: 320px;
-            height: 450px;
-            background-color: #1e1e1e;
-            border-radius: 15px;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.7);
-            flex-direction: column;
-            overflow: hidden;
-            position: absolute;
-            bottom: 75px;
-            right: 0;
-            border: 1px solid #444;
-        }
-        .chat-window.open { display: flex; }
-        .header {
-            background-color: #2c2c2c;
-            padding: 12px 15px;
-            border-bottom: 1px solid #444;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .header h3 { margin: 0; font-size: 16px; color: #f1c40f; }
-        .close-btn { background: none; border: none; color: #aaa; font-size: 22px; cursor: pointer; }
-        .messages {
-            flex: 1;
-            padding: 12px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .message {
-            max-width: 85%;
-            padding: 9px 12px;
-            border-radius: 12px;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-        .bot-message { background-color: #333; color: white; align-self: flex-start; border-bottom-left-radius: 2px; }
-        .user-message { background-color: #f1c40f; color: #111; align-self: flex-end; border-bottom-right-radius: 2px; font-weight: bold; }
-        .input-area {
-            display: flex;
-            padding: 10px;
-            background-color: #2c2c2c;
-            border-top: 1px solid #444;
-        }
-        .input-area input {
-            flex: 1;
-            padding: 9px;
-            border-radius: 20px;
-            border: 1px solid #555;
-            background-color: #121212;
-            color: white;
-            outline: none;
-        }
-        .input-area button {
-            margin-left: 6px;
-            padding: 0 14px;
-            border-radius: 20px;
-            border: none;
-            background-color: #f1c40f;
-            color: #111;
-            font-weight: bold;
-            cursor: pointer;
-        }
+        /* Estilos básicos de tu widget flotante */
+        body { font-family: Arial, sans-serif; background: #f4f4f9; margin: 0; padding: 20px; }
+        #chat-container { width: 350px; background: #1a1a1a; color: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; }
+        #chat-header { background: #2a2a2a; padding: 12px; font-weight: bold; color: #ffcc00; display: flex; justify-content: space-between; align-items: center; }
+        #chat-messages { height: 300px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+        .message { padding: 8px 12px; border-radius: 8px; max-width: 80%; }
+        .user-msg { background: #ffcc00; color: #000; align-self: flex-end; }
+        .bot-msg { background: #333; color: #fff; align-self: flex-start; }
+        #chat-input-area { display: flex; padding: 10px; background: #222; border-top: 1px solid #333; }
+        #chat-input { flex: 1; padding: 8px; border: none; border-radius: 4px; outline: none; background: #333; color: #fff; }
+        #chat-send { background: #ffcc00; border: none; padding: 8px 12px; margin-left: 6px; border-radius: 4px; font-weight: bold; cursor: pointer; color: #000; }
+        .ticket-btn { background: #e74c3c; color: #fff; border: none; padding: 6px 10px; margin-top: 6px; border-radius: 4px; cursor: pointer; font-size: 12px; }
     </style>
 </head>
 <body>
 
-<div id="chat-widget-container">
-    <!-- Icono de ficha de casino / moneda -->
-    <button class="chat-btn" id="chatBtn">🪙</button>
-    
-    <div class="chat-window" id="chatWindow">
-        <div class="header">
-            <h3>🎰 Soporte Casino</h3>
-            <button class="close-btn" id="closeBtn">×</button>
-        </div>
-        <div class="messages" id="messages">
-            <div class="message bot-message">¡Hola! ¿En qué puedo ayudarte hoy en el casino?</div>
-        </div>
-        <div class="input-area">
-            <input type="text" id="userInput" placeholder="Escribe un mensaje...">
-            <button id="sendBtn">Enviar</button>
-        </div>
+<div id="chat-container">
+    <div id="chat-header">
+        <span>🪙 Soporte ClassicGames</span>
+    </div>
+    <div id="chat-messages">
+        <div class="message bot-msg">¡Hola! ¿En qué puedo ayudarte hoy en classicgames.bet?</div>
+    </div>
+    <div id="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Escribe tu consulta...">
+        <button id="chat-send" onclick="enviarMensaje()">Enviar</button>
     </div>
 </div>
 
 <script>
-    // Referencias directas y seguras
-    const chatBtn = document.getElementById('chatBtn');
-    const chatWindow = document.getElementById('chatWindow');
-    const closeBtn = document.getElementById('closeBtn');
-    const messages = document.getElementById('messages');
-    const userInput = document.getElementById('userInput');
-    const sendBtn = document.getElementById('sendBtn');
+    const GROQ_API_KEY = "TU_GROQ_API_KEY"; // Reemplaza con tu Key real de Groq
 
-    // Abrir y cerrar ventana de forma garantizada
-    chatBtn.onclick = function() {
-        chatWindow.classList.toggle('open');
-    };
+    async function enviarMensaje() {
+        const inputField = document.getElementById('chat-input');
+        const mensajeTexto = inputField.value.trim();
+        if (!mensajeTexto) return;
 
-    closeBtn.onclick = function() {
-        chatWindow.classList.remove('open');
-    };
+        agregarMensaje(mensajeTexto, 'user-msg');
+        inputField.value = '';
 
-    // Enviar mensaje de prueba funcional inmediatamente
-    sendBtn.onclick = sendMessage;
-    userInput.onkeypress = function(e) {
-        if (e.key === 'Enter') sendMessage();
-    };
+        // Indicador de escribiendo...
+        const idCarga = agregarMensaje('Pensando...', 'bot-msg');
 
-    function sendMessage() {
-        const text = userInput.value.trim();
-        if (!text) return;
-
-        // Mostrar mensaje del usuario
-        appendMessage(text, 'user-message');
-        userInput.value = '';
-
-        // Simular respuesta automática o conectar con tu IA de Groq aquí
-        setTimeout(() => {
-            appendMessage("Recibido. Para respuestas de IA en vivo, recuerda colocar tu API Key de Groq en el código.", 'bot-message');
-        }, 500);
+        try {
+            const respuestaIA = await consultarGroq(mensajeTexto);
+            actualizarMensaje(idCarga, respuestaIA);
+        } catch (error) {
+            actualizarMensaje(idCarga, 'Lo siento, hubo un error de conexión. ¿Deseas generar un ticket de soporte humano?');
+            mostrarBotonTicket();
+        }
     }
 
-    function appendMessage(text, className) {
-        const div = document.createElement('div');
-        div.className = `message ${className}`;
-        div.textContent = text;
-        messages.appendChild(div);
-        messages.scrollTop = messages.scrollHeight;
+    function agregarMensaje(texto, clase) {
+        const messagesDiv = document.getElementById('chat-messages');
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${clase}`;
+        msgDiv.innerText = texto;
+        const id = 'msg_' + Date.now();
+        msgDiv.id = id;
+        messagesDiv.appendChild(msgDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        return id;
+    }
+
+    function actualizarMensaje(id, texto) {
+        const msgDiv = document.getElementById(id);
+        if (msgDiv) msgDiv.innerText = texto;
+    }
+
+    async function consultarGroq(mensaje) {
+        const systemPrompt = `
+        Eres el asistente de soporte oficial y exclusivo de classicgames.bet. 
+        Tu único objetivo es ayudar con información sobre juegos, bonos, depósitos y retiros en classicgames.bet.
+        REGLAS:
+        1. Si te consultan sobre temas ajenos al casino, responde amablemente que solo atiendes consultas de classicgames.bet.
+        2. Si no sabes la respuesta o el usuario necesita ayuda técnica avanzada, indícale amablemente que puede generar un ticket de soporte humano.
+        `;
+
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${GROQ_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                model: 'llama3-70b-8192',
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: mensaje }
+                ]
+            })
+        });
+
+        const data = await response.json();
+        return data.choices[0].message.content;
+    }
+
+    function mostrarBotonTicket() {
+        const messagesDiv = document.getElementById('chat-messages');
+        const btn = document.createElement('button');
+        btn.className = 'ticket-btn';
+        btn.innerText = '🎫 Generar Ticket Humano';
+        btn.onclick = () => {
+            alert('Ticket generado con éxito. Un agente se comunicará contigo.');
+            btn.remove();
+        };
+        messagesDiv.appendChild(btn);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
 </script>
 
